@@ -2,13 +2,16 @@ package com.dljonesapps.sparqchallenge.data.repository
 
 import android.net.Uri
 import com.dljonesapps.sparqchallenge.data.api.PokemonApi
+import com.dljonesapps.sparqchallenge.data.api.PokemonDetailApi
 import com.dljonesapps.sparqchallenge.data.db.PokemonDao
 import com.dljonesapps.sparqchallenge.data.db.PokemonEntity
+import com.dljonesapps.sparqchallenge.data.model.PokemonDetail
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 
 class PokemonRepository(
     private val api: PokemonApi,
+    private val detailApi: PokemonDetailApi,
     private val dao: PokemonDao
 ) {
     // Local variable for pagination state
@@ -67,6 +70,34 @@ class PokemonRepository(
             }
         } catch (e: Exception) {
             // On error, just emit the failure
+            emit(Result.failure(e))
+        }
+    }
+    
+    fun getPokemonDetail(url: String): Flow<Result<PokemonDetail>> = flow {
+        try {
+            // Extract the Pokemon ID from the URL
+            val pokemonId = url.split("/").dropLast(1).last()
+            
+            // Fetch the Pokemon details
+            val response = detailApi.getPokemonDetail(pokemonId)
+            
+            // Map the response to our domain model
+            val pokemonDetail = PokemonDetail(
+                id = response.id,
+                name = response.name,
+                height = response.height,
+                weight = response.weight,
+                types = response.types.map { it.type.name },
+                stats = response.stats.associate { it.stat.name to it.base_stat },
+                abilities = response.abilities.map { it.ability.name },
+                imageUrl = response.sprites.other?.official_artwork?.front_default 
+                    ?: response.sprites.front_default
+                    ?: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/$pokemonId.png"
+            )
+            
+            emit(Result.success(pokemonDetail))
+        } catch (e: Exception) {
             emit(Result.failure(e))
         }
     }

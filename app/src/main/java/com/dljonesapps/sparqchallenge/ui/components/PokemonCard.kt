@@ -1,5 +1,6 @@
 package com.dljonesapps.sparqchallenge.ui.components
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
@@ -21,7 +22,8 @@ import com.dljonesapps.sparqchallenge.data.db.PokemonEntity
 @Composable
 fun PokemonCard(
     pokemon: PokemonEntity,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit
 ) {
     val pokemonId = pokemon.url.split("/").dropLast(1).last()
     val imageUrl = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/$pokemonId.png"
@@ -30,7 +32,8 @@ fun PokemonCard(
         modifier = modifier
             .padding(vertical = 4.dp)
             .clip(RoundedCornerShape(16.dp))
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .clickable { onClick() },
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.primaryContainer
         ),
