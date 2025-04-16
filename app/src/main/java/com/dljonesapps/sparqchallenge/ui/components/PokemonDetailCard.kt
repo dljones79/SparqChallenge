@@ -9,7 +9,6 @@ import androidx.compose.animation.scaleOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -33,7 +32,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import coil.compose.AsyncImage
+import coil.compose.SubcomposeAsyncImage
 import coil.request.ImageRequest
 import com.dljonesapps.sparqchallenge.data.model.PokemonDetail
 
@@ -95,17 +94,22 @@ fun PokemonDetailCard(
                     Spacer(modifier = Modifier.height(16.dp))
                     
                     // Pokemon image
-                    AsyncImage(
-                        model = ImageRequest.Builder(LocalContext.current)
-                            .data(pokemonDetail.imageUrl)
-                            .crossfade(true)
-                            .build(),
-                        contentDescription = "${pokemonDetail.name} image",
+                    Box(
                         modifier = Modifier
                             .size(200.dp)
-                            .padding(8.dp),
-                        contentScale = ContentScale.Fit
-                    )
+                            .padding(8.dp)
+                    ) {
+                        SubcomposeAsyncImage(
+                            modifier = Modifier.fillMaxSize(),
+                            model = ImageRequest.Builder(LocalContext.current)
+                                .data(pokemonDetail.imageUrl)
+                                .crossfade(true)
+                                .build(),
+                            contentDescription = "${pokemonDetail.name} image",
+                            contentScale = ContentScale.Fit,
+                            loading = { CircularProgressIndicator() }
+                        )
+                    }
                     
                     Spacer(modifier = Modifier.height(16.dp))
                     

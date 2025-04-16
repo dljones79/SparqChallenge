@@ -8,6 +8,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.capitalize
@@ -15,7 +17,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil.compose.AsyncImage
+import coil.compose.SubcomposeAsyncImage
 import coil.request.ImageRequest
 import com.dljonesapps.sparqchallenge.data.db.PokemonEntity
 
@@ -47,16 +49,18 @@ fun PokemonCard(
             verticalAlignment = Alignment.CenterVertically
         ) {
             // Pokemon sprite
-            AsyncImage(
-                model = ImageRequest.Builder(LocalContext.current)
-                    .data(imageUrl)
-                    .crossfade(true)
-                    .build(),
-                contentDescription = "${pokemon.name} sprite",
-                modifier = Modifier
-                    .size(60.dp),
-                contentScale = ContentScale.Fit
-            )
+            Box(modifier = Modifier.size(60.dp)) {
+                SubcomposeAsyncImage(
+                    modifier = Modifier.fillMaxSize(),
+                    model = ImageRequest.Builder(LocalContext.current)
+                        .data(imageUrl)
+                        .crossfade(true)
+                        .build(),
+                    contentDescription = "${pokemon.name} image",
+                    contentScale = ContentScale.Fit,
+                    loading = { CircularProgressIndicator() }
+                )
+            }
 
             Column(
                 modifier = Modifier.weight(1f)
