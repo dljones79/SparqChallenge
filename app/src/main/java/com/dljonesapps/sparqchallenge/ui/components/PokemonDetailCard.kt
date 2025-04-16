@@ -1,14 +1,15 @@
 package com.dljonesapps.sparqchallenge.ui.components
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.EaseInQuint
+import androidx.compose.animation.core.EaseOutQuint
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.animation.scaleIn
-import androidx.compose.animation.scaleOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -22,6 +23,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.capitalize
@@ -30,8 +32,7 @@ import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.Dialog
-import androidx.compose.ui.window.DialogProperties
+import androidx.compose.ui.zIndex
 import coil.compose.SubcomposeAsyncImage
 import coil.request.ImageRequest
 import com.dljonesapps.sparqchallenge.data.model.PokemonDetail
@@ -43,53 +44,61 @@ fun PokemonDetailCard(
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    // Semi-transparent scrim that covers the entire screen
     AnimatedVisibility(
         visible = isVisible,
-        enter = fadeIn(tween(300)) + scaleIn(tween(300)) + slideInVertically(tween(300)) { it },
-        exit = fadeOut(tween(300)) + scaleOut(tween(300)) + slideOutVertically(tween(300)) { it }
+        enter = fadeIn(animationSpec = tween(300)),
+        exit = fadeOut(animationSpec = tween(300)),
+        modifier = Modifier.zIndex(10f)
     ) {
-        Dialog(
-            onDismissRequest = onDismiss,
-            properties = DialogProperties(
-                dismissOnBackPress = true,
-                dismissOnClickOutside = true,
-                usePlatformDefaultWidth = false
-            )
-        ) {
-            Surface(
-                modifier = modifier
-                    .fillMaxSize()
-                    .padding(16.dp),
-                shape = RoundedCornerShape(16.dp),
-                color = MaterialTheme.colorScheme.surface,
-                tonalElevation = 8.dp
-            ) {
-                Column(
-                    modifier = Modifier
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.Black.copy(alpha = 0.5f))
+                .pointerInput(Unit) {
+                    detectTapGestures { onDismiss() }
+                }
+        )
+    }
+    
+    // Animated card content
+    AnimatedVisibility(
+        visible = isVisible,
+        enter = slideInVertically(
+            initialOffsetY = { it },
+            animationSpec = tween(500, easing = EaseOutQuint)
+        ) + fadeIn(animationSpec = tween(300)),
+        exit = slideOutVertically(
+            targetOffsetY = { it },
+            animationSpec = tween(500, easing = EaseInQuint)
+        ) + fadeOut(animationSpec = tween(300)),
+        modifier = Modifier
+            .fillMaxSize()
+            .zIndex(11f)
+    ) {
+            Box(modifier = Modifier.fillMaxSize()) {
+                // Main content surface
+                Surface(
+                    modifier = modifier
                         .fillMaxSize()
                         .padding(16.dp)
-                        .verticalScroll(rememberScrollState()),
-                    horizontalAlignment = Alignment.CenterHorizontally
+                        .pointerInput(Unit) {
+                            // Prevent clicks from reaching the scrim
+                            detectTapGestures { }
+                        },
+                    shape = RoundedCornerShape(16.dp),
+                    color = MaterialTheme.colorScheme.surface,
+                    tonalElevation = 8.dp
                 ) {
-                    // Close button
-                    Box(
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        IconButton(
-                            onClick = onDismiss,
+                    // Scrollable content
+                    Box(modifier = Modifier.fillMaxSize()) {
+                        Column(
                             modifier = Modifier
-                                .align(Alignment.TopEnd)
-                                .size(36.dp)
-                                .clip(CircleShape)
-                                .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
+                                .fillMaxSize()
+                                .padding(top = 48.dp, start = 16.dp, end = 16.dp, bottom = 16.dp)
+                                .verticalScroll(rememberScrollState()),
+                            horizontalAlignment = Alignment.CenterHorizontally
                         ) {
-                            Icon(
-                                imageVector = Icons.Default.Close,
-                                contentDescription = "Close",
-                                tint = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                        }
-                    }
                     
                     Spacer(modifier = Modifier.height(16.dp))
                     
@@ -212,11 +221,30 @@ fun PokemonDetailCard(
                     }
                     
                     Spacer(modifier = Modifier.height(24.dp))
+                        }
+                    }
+                }
+                
+                // Fixed close button that doesn't scroll
+                IconButton(
+                    onClick = onDismiss,
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .padding(24.dp)
+                        .size(36.dp)
+                        .clip(CircleShape)
+                        .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.7f))
+                        .zIndex(12f)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Close,
+                        contentDescription = "Close",
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
                 }
             }
         }
     }
-}
 
 @Composable
 fun TypeChip(type: String) {

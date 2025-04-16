@@ -45,9 +45,10 @@ fun PokemonListScreen(
             )
             
             // Pokemon detail card
-            detailUiState.pokemonDetail?.let { pokemonDetail ->
+            val currentDetail = detailUiState.pokemonDetail
+            if (currentDetail != null) {
                 PokemonDetailCard(
-                    pokemonDetail = pokemonDetail,
+                    pokemonDetail = currentDetail,
                     isVisible = isDetailVisible,
                     onDismiss = { viewModel.dismissDetail() }
                 )

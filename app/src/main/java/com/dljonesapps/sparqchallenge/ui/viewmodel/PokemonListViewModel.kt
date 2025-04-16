@@ -3,7 +3,6 @@ package com.dljonesapps.sparqchallenge.ui.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dljonesapps.sparqchallenge.data.db.PokemonEntity
-import com.dljonesapps.sparqchallenge.data.model.PokemonDetail
 import com.dljonesapps.sparqchallenge.data.repository.PokemonRepository
 import com.dljonesapps.sparqchallenge.ui.state.PokemonDetailUiState
 import com.dljonesapps.sparqchallenge.ui.state.PokemonListUiState
@@ -23,7 +22,6 @@ class PokemonListViewModel(
     val detailUiState: StateFlow<PokemonDetailUiState> = _detailUiState.asStateFlow()
     
     private val _selectedPokemon = MutableStateFlow<PokemonEntity?>(null)
-    val selectedPokemon: StateFlow<PokemonEntity?> = _selectedPokemon.asStateFlow()
     
     private val _isDetailVisible = MutableStateFlow(false)
     val isDetailVisible: StateFlow<Boolean> = _isDetailVisible.asStateFlow()
