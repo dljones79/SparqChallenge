@@ -1,3 +1,12 @@
 <resources>
     <string name="app_name">Sparq Challenge</string>
+
+    <!-- Top Bar -->
+    <string name="title_bar_label">Pokémon</string>
+
+    <!-- Details card -->
+    <string name="label_height">Height</string>
+    <string name="label_weight">Weight</string>
+    <string name="label_base_stats">Base Stats</string>
+    <string name="label_abilities">Abilities</string>
 </resources>

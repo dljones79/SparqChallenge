@@ -8,10 +8,13 @@ import com.dljonesapps.sparqchallenge.ui.components.InfiniteScrollList
 import com.dljonesapps.sparqchallenge.ui.components.PokemonCard
 import com.dljonesapps.sparqchallenge.ui.components.PokemonDetailCard
 import com.dljonesapps.sparqchallenge.ui.viewmodel.PokemonListViewModel
-import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import com.dljonesapps.sparqchallenge.R
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PokemonListScreen(
     viewModel: PokemonListViewModel
@@ -24,50 +27,65 @@ fun PokemonListScreen(
     Surface(
         modifier = Modifier
             .fillMaxSize()
-            .systemBarsPadding(),
+            .navigationBarsPadding(),
         color = MaterialTheme.colorScheme.background
     ) {
-        Box(modifier = Modifier.fillMaxSize()) {
-            // Pokemon list
-            InfiniteScrollList(
-                items = uiState.pokemon,
-                itemContent = { pokemon ->
-                    PokemonCard(
-                        pokemon = pokemon,
-                        modifier = Modifier,
-                        onClick = { viewModel.selectPokemon(pokemon) }
+        Column(modifier = Modifier.fillMaxSize()) {
+            TopAppBar(
+                title = {
+                    Text(
+                        text = stringResource(R.string.title_bar_label),
+                        fontWeight = FontWeight.Bold
                     )
                 },
-                isLoading = uiState.isLoading,
-                loadMoreItems = viewModel::loadPokemon,
-                listState = listState,
-                modifier = Modifier.fillMaxSize()
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.primaryContainer,
+                    titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                )
             )
             
-            // Pokemon detail card
-            val currentDetail = detailUiState.pokemonDetail
-            if (currentDetail != null) {
-                PokemonDetailCard(
-                    pokemonDetail = currentDetail,
-                    isVisible = isDetailVisible,
-                    onDismiss = { viewModel.dismissDetail() }
+            Box(modifier = Modifier.fillMaxSize()) {
+                // Pokemon list
+                InfiniteScrollList(
+                    items = uiState.pokemon,
+                    itemContent = { pokemon ->
+                        PokemonCard(
+                            pokemon = pokemon,
+                            modifier = Modifier,
+                            onClick = { viewModel.selectPokemon(pokemon) }
+                        )
+                    },
+                    isLoading = uiState.isLoading,
+                    loadMoreItems = viewModel::loadPokemon,
+                    listState = listState,
+                    modifier = Modifier.fillMaxSize()
                 )
-            }
-            
-            // Loading indicator for detail
-            if (detailUiState.isLoading && isDetailVisible) {
-                CircularProgressIndicator(
-                    modifier = Modifier.align(Alignment.Center)
-                )
-            }
-            
-            // Error message for detail
-            detailUiState.error?.let { error ->
-                if (isDetailVisible) {
-                    Snackbar(
-                        modifier = Modifier.align(Alignment.BottomCenter)
-                    ) {
-                        Text(text = "Error: $error")
+                
+                // Pokemon detail card
+                val currentDetail = detailUiState.pokemonDetail
+                if (currentDetail != null) {
+                    PokemonDetailCard(
+                        pokemonDetail = currentDetail,
+                        isVisible = isDetailVisible,
+                        onDismiss = { viewModel.dismissDetail() }
+                    )
+                }
+                
+                // Loading indicator for detail
+                if (detailUiState.isLoading && isDetailVisible) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.align(Alignment.Center)
+                    )
+                }
+                
+                // Error message for detail
+                detailUiState.error?.let { error ->
+                    if (isDetailVisible) {
+                        Snackbar(
+                            modifier = Modifier.align(Alignment.BottomCenter)
+                        ) {
+                            Text(text = "Error: $error")
+                        }
                     }
                 }
             }

@@ -26,6 +26,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.intl.Locale
@@ -35,6 +36,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import coil.compose.SubcomposeAsyncImage
 import coil.request.ImageRequest
+import com.dljonesapps.sparqchallenge.R
 import com.dljonesapps.sparqchallenge.data.model.PokemonDetail
 
 @Composable
@@ -157,12 +159,12 @@ fun PokemonDetailCard(
                         horizontalArrangement = Arrangement.SpaceEvenly
                     ) {
                         PhysicalAttribute(
-                            label = "Height",
+                            label = stringResource(R.string.label_height),
                             value = "${pokemonDetail.height / 10.0} m"
                         )
                         
                         PhysicalAttribute(
-                            label = "Weight",
+                            label = stringResource(R.string.label_weight),
                             value = "${pokemonDetail.weight / 10.0} kg"
                         )
                     }
@@ -171,7 +173,7 @@ fun PokemonDetailCard(
                     
                     // Stats
                     Text(
-                        text = "Base Stats",
+                        text = stringResource(R.string.label_base_stats),
                         fontSize = 20.sp,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.onSurface,
@@ -197,7 +199,7 @@ fun PokemonDetailCard(
                     
                     // Abilities
                     Text(
-                        text = "Abilities",
+                        text = stringResource(R.string.label_abilities),
                         fontSize = 20.sp,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.onSurface,
@@ -246,6 +248,9 @@ fun PokemonDetailCard(
         }
     }
 
+// Obviously, I wouldn't do this in a production app. I would create some type of mapper
+// and map the ui state from the response, and in turn map the correct color.
+// Just did it like this to save some time.
 @Composable
 fun TypeChip(type: String) {
     val typeColor = when (type.lowercase()) {
